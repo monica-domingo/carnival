@@ -1,0 +1,32 @@
+{
+  "name": "cocoa",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "clean": "rm -rf .turbo node_modules",
+    "build": "tsc -b && vite build",
+    "preview": "serve dist"
+  },
+  "devDependencies": {
+    "@builder.io/qwik-react": "0.5.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "serve": "^14.2.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "@builder.io/qwik": "^1.12.1",
+    "@carnival/cotton": "*",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
