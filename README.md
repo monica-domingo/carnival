@@ -1,208 +1,125 @@
-# Turborepo Design System Starter
+# 🎪 carnival
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+**carnival** is a frontend monorepo playground for building an **accessible design system** using **[React Aria Components](https://react-spectrum.adobe.com/react-aria/)**. Managed with **Turborepo** and **Bun**, it provides a structured setup for designing, testing, and documenting accessible UI components.
 
-This guide explains how to use a React design system starter powered by:
+---
 
-- 🏎 [Turborepo](https://turbo.build/repo) — High-performance build system for Monorepos
-- 🚀 [React](https://reactjs.org/) — JavaScript library for user interfaces
-- 🛠 [Tsup](https://github.com/egoist/tsup) — TypeScript bundler powered by esbuild
-- 📖 [Storybook](https://storybook.js.org/) — UI component environment powered by Vite
+## 🍭 cotton – the design system
 
-As well as a few others tools preconfigured:
+`cotton` is the core design system package within this repo. It focuses on:
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Changesets](https://github.com/changesets/changesets) for managing versioning and changelogs
-- [GitHub Actions](https://github.com/changesets/action) for fully automated package publishing
+- ♿ **Accessibility-first** UI primitives with `react-aria-components`
+- 🔩 **Composable**, unstyled building blocks
+- 🧪 A foundation for iterating on API design and component structure
 
-## Using this example
+---
 
-Run the following command:
+## 🍫 cocoa – the consumer app
 
-```sh
-npx create-turbo@latest -e design-system
+`cocoa` is a Qwik app that consumes components from `cotton`. It acts as a sandbox to:
+
+- Test components in real-world usage
+- Test Qwik
+- Catch integration friction early
+- Explore layout, routing, and app-level concerns
+
+---
+
+## 📚 Storybook
+
+Interactive component documentation is handled through **Storybook**, located at:
+
 ```
 
-### Useful Commands
+docs/storybook
 
-- `pnpm build` - Build all packages, including the Storybook site
-- `pnpm dev` - Run all packages locally and preview with Storybook
-- `pnpm lint` - Lint all packages
-- `pnpm changeset` - Generate a changeset
-- `pnpm clean` - Clean up all `node_modules` and `dist` folders (runs each package's clean script)
+````
 
-## Turborepo
-
-[Turborepo](https://turbo.build/repo) is a high-performance build system for JavaScript and TypeScript codebases. It was designed after the workflows used by massive software engineering organizations to ship code at scale. Turborepo abstracts the complex configuration needed for monorepos and provides fast, incremental builds with zero-configuration remote caching.
-
-Using Turborepo simplifies managing your design system monorepo, as you can have a single lint, build, test, and release process for all packages. [Learn more](https://vercel.com/blog/monorepos-are-changing-how-teams-build-software) about how monorepos improve your development workflow.
-
-## Apps & Packages
-
-This Turborepo includes the following packages and applications:
-
-- `apps/docs`: Component documentation site with Storybook
-- `packages/ui`: Core React components
-- `packages/typescript-config`: Shared `tsconfig.json`s used throughout the Turborepo
-- `packages/eslint-config`: ESLint preset
-
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/). Workspaces enables us to "hoist" dependencies that are shared between packages to the root `package.json`. This means smaller `node_modules` folders and a better local dev experience. To install a dependency for the entire monorepo, use the `-w` workspaces flag with `pnpm add`.
-
-This example sets up your `.gitignore` to exclude all generated files, other folders like `node_modules` used to store your dependencies.
-
-### Compilation
-
-To make the ui library code work across all browsers, we need to compile the raw TypeScript and React code to plain JavaScript. We can accomplish this with `tsup`, which uses `esbuild` to greatly improve performance.
-
-Running `pnpm build` from the root of the Turborepo will run the `build` command defined in each package's `package.json` file. Turborepo runs each `build` in parallel and caches & hashes the output to speed up future builds.
-
-For `@acme/ui`, the `build` command is equivalent to the following:
+To start Storybook:
 
 ```bash
-tsup src/*.tsx --format esm,cjs --dts --external react
-```
+bun turbo run dev --filter=storybook
+````
 
-`tsup` compiles all of the components in the design system individually, into both ES Modules and CommonJS formats as well as their TypeScript types. The `package.json` for `@acme/ui` then instructs the consumer to select the correct format:
-
-```json:ui/package.json
-{
-  "name": "@acme/ui",
-  "version": "0.0.0",
-  "sideEffects": false,
-  "exports":{
-    "./button": {
-      "types": "./src/button.tsx",
-      "import": "./dist/button.mjs",
-      "require": "./dist/button.js"
-    }
-  }
-}
-```
-
-Run `pnpm build` to confirm compilation is working correctly. You should see a folder `ui/dist` which contains the compiled output.
+To build:
 
 ```bash
-ui
-└── dist
-    ├── button.d.ts  <-- Types
-    ├── button.js    <-- CommonJS version
-    ├── button.mjs   <-- ES Modules version
-    └── button.d.mts   <-- ES Modules version with Types
+bun turbo run build --filter=storybook
 ```
 
-## Components
+> Storybook renders components directly from the `cotton` package.
 
-Each file inside of `ui/src` is a component inside our design system. For example:
+---
 
-```tsx:ui/src/Button.tsx
-import * as React from 'react';
+## 📦 Monorepo Structure
 
-export interface ButtonProps {
-  children: React.ReactNode;
-}
-
-export function Button(props: ButtonProps) {
-  return <button>{props.children}</button>;
-}
-
-Button.displayName = 'Button';
+```
+carnival/
+├── apps/
+│   └── cocoa/              # Consumer app using the design system
+├── docs/
+│   └── storybook/          # Storybook for interactive component docs
+├── packages/
+│   └── cotton/             # Design system (React + react-aria-components)
+├── turbo.json
+├── bun.lockb
+└── README.md
 ```
 
-When adding a new file, ensure that its specifier is defined in `package.json` file:
+---
 
-```json:ui/package.json
-{
-  "name": "@acme/ui",
-  "version": "0.0.0",
-  "sideEffects": false,
-  "exports":{
-    "./button": {
-      "types": "./src/button.tsx",
-      "import": "./dist/button.mjs",
-      "require": "./dist/button.js"
-    }
-    // Add new component exports here
-  }
-}
-```
+## 🚀 Getting Started
 
-## Storybook
-
-Storybook provides us with an interactive UI playground for our components. This allows us to preview our components in the browser and instantly see changes when developing locally. This example preconfigures Storybook to:
-
-- Use Vite to bundle stories instantly (in milliseconds)
-- Automatically find any stories inside the `stories/` folder
-- Support using module path aliases like `@acme/ui` for imports
-- Write MDX for component documentation pages
-
-For example, here's the included Story for our `Button` component:
-
-```js:apps/docs/stories/button.stories.mdx
-import { Button } from '@acme/ui/button';
-import { Meta, Story, Preview, Props } from '@storybook/addon-docs/blocks';
-
-<Meta title="Components/Button" component={Button} />
-
-# Button
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget consectetur tempor, nisl nunc egestas nisi, euismod aliquam nisl nunc euismod.
-
-## Props
-
-<Props of={Box} />
-
-## Examples
-
-<Preview>
-  <Story name="Default">
-    <Button>Hello</Button>
-  </Story>
-</Preview>
-```
-
-This example includes a few helpful Storybook scripts:
-
-- `pnpm dev`: Starts Storybook in dev mode with hot reloading at `localhost:6006`
-- `pnpm build`: Builds the Storybook UI and generates the static HTML files
-- `pnpm preview-storybook`: Starts a local server to view the generated Storybook UI
-
-## Versioning & Publishing Packages
-
-This example uses [Changesets](https://github.com/changesets/changesets) to manage versions, create changelogs, and publish to npm. It's preconfigured so you can start publishing packages immediately.
-
-You'll need to create an `NPM_TOKEN` and `GITHUB_TOKEN` and add it to your GitHub repository settings to enable access to npm. It's also worth installing the [Changesets bot](https://github.com/apps/changeset-bot) on your repository.
-
-### Generating the Changelog
-
-To generate your changelog, run `pnpm changeset` locally:
-
-1. **Which packages would you like to include?** – This shows which packages and changed and which have remained the same. By default, no packages are included. Press `space` to select the packages you want to include in the `changeset`.
-1. **Which packages should have a major bump?** – Press `space` to select the packages you want to bump versions for.
-1. If doing the first major version, confirm you want to release.
-1. Write a summary for the changes.
-1. Confirm the changeset looks as expected.
-1. A new Markdown file will be created in the `changeset` folder with the summary and a list of the packages included.
-
-### Releasing
-
-When you push your code to GitHub, the [GitHub Action](https://github.com/changesets/action) will run the `release` script defined in the root `package.json`:
+1. Clone the repository:
 
 ```bash
-turbo run build --filter=docs^... && changeset publish
+git clone https://github.com/monica-domingo/carnival.git
+cd carnival
 ```
 
-Turborepo runs the `build` script for all publishable packages (excluding docs) and publishes the packages to npm. By default, this example includes `acme` as the npm organization. To change this, do the following:
+2. Install dependencies:
 
-- Rename folders in `packages/*` to replace `acme` with your desired scope
-- Search and replace `acme` with your desired scope
-- Re-run `pnpm install`
-
-To publish packages to a private npm organization scope, **remove** the following from each of the `package.json`'s
-
-```diff
-- "publishConfig": {
--  "access": "public"
-- },
+```bash
+bun install
 ```
+
+3. Run the consumer app:
+
+```bash
+bun turbo run dev --filter=cocoa
+```
+
+4. Or run Storybook:
+
+```bash
+bun turbo run dev --filter=storybook
+```
+
+> Requires **Bun v1.2.3+** and **Node v18+**
+
+---
+
+## 🎯 Goals
+
+* Build a reusable, accessible design system
+* Document UI primitives via Storybook
+* Explore design system workflows in a monorepo setup
+* Validate DX with a real consuming app
+
+---
+
+## 🛠 Stack
+
+* ⚛️ **React**
+* ⚡️ **Qwik**
+* ♿ **React Aria Components**
+* 📖 **Storybook**
+* 🌀 **Turborepo**
+* ⚡ **Bun**
+
+---
+
+## 🤹 About the name
+
+> **carnival** is a space for creative UI experimentation.
+> **cotton** (like cotton candy 🍭) represents soft, accessible, lightweight components with a delightful DX.
