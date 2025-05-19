@@ -1,49 +1,33 @@
 /** @jsxImportSource react */
 import { qwikify$ } from '@builder.io/qwik-react';
-import {Button, Calendar, Form, GridList, GridListItem, TextField} from "@carnival/cotton";
+import { useMemo } from 'react';
+import * as CottonLib from "@carnival/cotton";
 
-// Create React component standard way
 function CottonExample() {
+    const items = useMemo(() => [
+        { id: '1', name: 'Charizard' },
+        { id: '2', name: 'Blastoise' },
+        { id: '3', name: 'Venusaur' },
+        { id: '4', name: 'Pikachu' },
+    ], []);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'row', gap: '2rem', margin: '2rem' }}>
             <div>
-                <GridList aria-label="Favorite pokemon" selectionMode="multiple">
-                    <GridListItem textValue="Charizard">
-                        Charizard
-                        <Button aria-label="Info">ⓘ</Button>
-                    </GridListItem>
-                    <GridListItem textValue="Blastoise">
-                        Blastoise
-                        <Button aria-label="Info">ⓘ</Button>
-                    </GridListItem>
-                    <GridListItem textValue="Venusaur">
-                        Venusaur
-                        <Button aria-label="Info">ⓘ</Button>
-                    </GridListItem>
-                    <GridListItem textValue="Pikachu">
-                        Pikachu
-                        <Button aria-label="Info">ⓘ</Button>
-                    </GridListItem>
-                </GridList>
-            </div>
-
-            <div>
-                <Calendar aria-label="Appointment date" />
-                <div style={{ marginTop: '1rem' }} >
-                    <Button onPress={() => alert('Hello world!')}>Test Qwik with react component</Button>
-                </div>
-            </div>
-
-            <div>
-                <Form>
-                    <TextField name="email" type="email" isRequired />
-
-                    <Button type="submit">Submit</Button>
-                </Form>
+                {/*// @ts-ignore - WIP: Experiment in progress */}
+                <CottonLib.GridList aria-label="Favorite pokemon" selectionMode="multiple">
+                    {items.map(item => (
+                        // @ts-ignore - WIP: Experiment in progress
+                        <CottonLib.GridListItem key={item.id} textValue={item.name}>
+                            {item.name}
+                            {/*// @ts-ignore - WIP: Experiment in progress*/}
+                            <CottonLib.Button aria-label="Info">ⓘ</CottonLib.Button>
+                        </CottonLib.GridListItem>
+                    ))}
+                </CottonLib.GridList>
             </div>
         </div>
     );
 }
 
-// Convert React component to Qwik component
-export const Cotton = qwikify$(CottonExample);
+export const Cotton = qwikify$(CottonExample, { eagerness: 'load' });
